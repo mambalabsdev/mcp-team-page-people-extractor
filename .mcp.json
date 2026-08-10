@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "mamba-team-page-people-extractor": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mambalabsdev/mcp-team-page-people-extractor"
+      ],
+      "env": {
+        "APIFY_TOKEN": "your-apify-token"
+      }
+    }
+  }
+}
