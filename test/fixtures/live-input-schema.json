@@ -1,0 +1,97 @@
+{
+  "_provenance": {
+    "actorId": "j8a9zX0k4mNbvDbWK",
+    "buildId": "TJEZJBVDeptrcfjWg",
+    "buildNumber": "0.0.14",
+    "readAt": "2026-10-05T15:44:55.706Z"
+  },
+  "title": "Team Page People Extractor",
+  "description": "Give it a company domain. It returns the people that company publishes on its own team, leadership or about page: names, titles, and the page each one came from. Nothing here reads LinkedIn or any other profile network.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "domain": {
+      "title": "Company domain",
+      "type": "string",
+      "description": "A single company domain, for example swishdata.com. Protocol and path are stripped.",
+      "editor": "textfield",
+      "prefill": "swishdata.com",
+      "example": "swishdata.com"
+    },
+    "output_grain": {
+      "title": "Output grain",
+      "type": "string",
+      "description": "person returns one row per person, which is the default and what most Clay tables want. company returns one row per company with a people_json array plus the first five names and titles flattened into columns.",
+      "editor": "select",
+      "enum": [
+        "person",
+        "company"
+      ],
+      "enumTitles": [
+        "One row per person",
+        "One row per company"
+      ],
+      "default": "person",
+      "prefill": "person"
+    },
+    "seniority_filter": {
+      "title": "Seniority filter",
+      "type": "string",
+      "description": "all keeps everyone the page published. executive keeps founders and C-level only. leadership adds VPs, directors and heads.",
+      "editor": "select",
+      "enum": [
+        "all",
+        "executive",
+        "leadership"
+      ],
+      "enumTitles": [
+        "All",
+        "Executive (founder and C-level)",
+        "Leadership (adds VP, director, head)"
+      ],
+      "default": "all",
+      "prefill": "all"
+    },
+    "max_people": {
+      "title": "Max people per company",
+      "type": "string",
+      "description": "Sent as a string so Clay can map a column into it. Clamped to 1 to 200. People are ordered by seniority before the cap applies, and anything dropped is logged with the count.",
+      "editor": "textfield",
+      "default": "50",
+      "prefill": "25"
+    },
+    "include_emails": {
+      "title": "Include page emails",
+      "type": "boolean",
+      "description": "Off by default and you should probably leave it off. Across three domains that published an email on a team page we found one role mailbox, one placeholder in example content, and one literal user@domain.com template string. Not one was a real person's address. When on, emails come back on the COMPANY row only, never attached to a named person, because nothing on these pages proves which address belongs to whom.",
+      "editor": "checkbox",
+      "default": false,
+      "prefill": false
+    },
+    "skipCache": {
+      "title": "Skip cache",
+      "type": "string",
+      "description": "false uses the 14 day result cache. true re-crawls the company from scratch.",
+      "editor": "select",
+      "enum": [
+        "false",
+        "true"
+      ],
+      "enumTitles": [
+        "Use the cache",
+        "Skip the cache"
+      ],
+      "default": "false",
+      "prefill": "false"
+    },
+    "source_tag": {
+      "title": "Source Tag",
+      "type": "string",
+      "description": "Internal attribution tag set by Mamba Labs on published task examples. Not required, and nothing depends on it. Leave it empty.",
+      "editor": "hidden"
+    }
+  },
+  "required": [
+    "domain"
+  ]
+}
