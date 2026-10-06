@@ -1,7 +1,7 @@
 {
   "name": "@mambalabsdev/mcp-team-page-people-extractor",
   "displayName": "Team Page People Extractor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "MCP server for the Mamba Labs Team Page People Extractor actor on Apify. Returns the people a company publishes on its own team, leadership or about page, with names, titles and the source page.",
   "type": "module",
   "bin": {
@@ -50,7 +50,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.31.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "zod": "^4.5.4"
   },
   "devDependencies": {
