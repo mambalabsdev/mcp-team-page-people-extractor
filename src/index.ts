@@ -6,6 +6,16 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+// Optional per call spending cap, passed through to the actor's own max_charge_usd
+// input. The actor enforces it; this wrapper only forwards it when set.
+const MAX_CHARGE_USD = z
+  .number()
+  .min(0)
+  .optional()
+  .describe(
+    "Optional spending cap for this call, in USD, passed to the actor as max_charge_usd. The run stops before any charge that would take it past this amount and keeps every row already charged. Leave empty to rely only on the maximum charge per run set on your Apify account.",
+  );
+
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
   readFileSync(join(here, "..", "package.json"), "utf8"),
@@ -206,7 +216,7 @@ server.registerTool(
       "Extract the people a company publishes on its own team, leadership or about page, and return their names, titles and the page each one came from. It also reports which pages it actually reached, so an empty result tells you whether the company publishes nobody or whether the site could not be read, which are very different answers. output_grain person returns one row per person and is what most tables want; output_grain company returns one row per company with a people_json array plus the first five names and titles flattened into columns. seniority_filter narrows to founders and C level, or adds VPs, directors and heads. People are ordered by seniority before max_people applies, and anything dropped is logged with a count. include_emails is off by default and should usually stay off: across the domains tested, the addresses published on team pages were role mailboxes, placeholders and literal template strings rather than real people, so when it is on the emails come back on the company row only and are never attached to a named person. Results are cached for 14 days. Nothing here scrapes LinkedIn or any profile network; it reads only what the company published itself. Requires an APIFY_TOKEN and consumes Apify credits. Read only.",
     annotations: {
       title: "Extract Team Page People",
-      readOnlyHint: true,
+      readOnlyHint: false,
       destructiveHint: false,
       idempotentHint: true,
       openWorldHint: true,
@@ -218,6 +228,7 @@ server.registerTool(
     max_people: z.string().optional().describe("Sent as a string so Clay can map a column into it. Clamped to 1 to 200. People are ordered by seniority before the cap applies, and anything dropped is logged with the count. Default: \"50\"."),
     include_emails: z.boolean().optional().describe("Off by default and you should probably leave it off. Across three domains that published an email on a team page we found one role mailbox, one placeholder in example content, and one literal user@domain.com template string. Not one was a real person's address. When on, emails come back on the COMPANY row only, never attached to a named person, because nothing on these pages proves which address belongs to whom. Default: false."),
     skipCache: z.enum(["false", "true"]).optional().describe("false uses the 14 day result cache. true re-crawls the company from scratch. Default: \"false\"."),
+      max_charge_usd: MAX_CHARGE_USD,
     },
   },
   async (args) =>
