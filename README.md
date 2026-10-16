@@ -42,12 +42,20 @@ Give it a company domain and it returns the people that company publishes on its
 | `max_people` | string | no | Sent as a string so Clay can map a column into it. Clamped to 1 to 200. People are ordered by seniority before the cap applies, and anything dropped is logged with the count. |
 | `include_emails` | boolean | no | Off by default and you should probably leave it off. Across three domains that published an email on a team page we found one role mailbox, one placeholder in example content, and one literal user@domain.com template string. Not one was a real person's address. When on, emails come back on the COMPANY row only, never attached to a named person, because nothing on these pages proves which address belongs to whom. |
 | `skipCache` | enum | no | false uses the 14 day result cache. true re-crawls the company from scratch. |
+| `max_charge_usd` | number | no | Optional spending cap for this call, in USD. The actor stops before any charge that would take the run past this amount and keeps every row already charged. |
 
 ## Billing
 
 You are charged per person found, plus a small actor start fee. A company that publishes nobody costs only the start fee.
 
-Pricing is on the [actor's Apify page](https://apify.com/mambalabs/team-page-people-extractor). Running this server consumes Apify credits.
+Prices from the live pricing record, read 2026-10-16:
+
+| Event | Price per event (USD) | Fires when |
+| --- | --- | --- |
+| `apify-actor-start` | $0.00005 | Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event). |
+| `person-found` | $0.006 on the Free plan, down to $0.0051 on higher Apify plans | Charged once per person returned. A company with no readable team page returns a summary row and costs nothing beyond the run. In company grain the charge is once per person in the people array, not once per row, so a single row carrying 17 people bills 17 events. |
+
+The current price is on the [actor's Apify page](https://apify.com/mambalabs/team-page-people-extractor). Running this server consumes Apify credits.
 
 ## What this server does and does not do
 
